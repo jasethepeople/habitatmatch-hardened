@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: habitat_match_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports: ["5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+    healthcheck: {test: ["CMD-SHELL","pg_isready -U postgres -d habitat_match_dev"], interval: 5s, timeout: 5s, retries: 10}
+  api:
+    build: ./api
+    environment:
+      MIX_ENV: prod
+      DATABASE_URL: ecto://postgres:postgres@db/habitat_match_dev
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      DOCUMENT_ROOT: /data/documents
+      DOCUMENT_ENCRYPTION_KEY: ${DOCUMENT_ENCRYPTION_KEY}
+      WEB_URL: ${WEB_URL:-http://localhost}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      STRIPE_PRICE_STARTER: ${STRIPE_PRICE_STARTER}
+      STRIPE_PRICE_GROWTH: ${STRIPE_PRICE_GROWTH}
+      STRIPE_PRICE_SCALE: ${STRIPE_PRICE_SCALE}
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID}
+      TWILIO_API_KEY: ${TWILIO_API_KEY}
+      TWILIO_API_SECRET: ${TWILIO_API_SECRET}
+      TWILIO_VERIFY_SERVICE_SID: ${TWILIO_VERIFY_SERVICE_SID}
+      TWILIO_MESSAGING_SERVICE_SID: ${TWILIO_MESSAGING_SERVICE_SID}
+      TRANSLATION_URL: ${TRANSLATION_URL}
+      TRANSLATION_API_KEY: ${TRANSLATION_API_KEY}
+    depends_on: {db: {condition: service_healthy}}
+    volumes: ["documents:/data/documents"]
+    ports: ["4000:4000"]
+  web:
+    build: ./web
+    depends_on: [api]
+    ports: ["80:80"]
+volumes: {pgdata: {}, documents: {}}

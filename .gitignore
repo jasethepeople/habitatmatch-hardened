@@ -1,0 +1,15 @@
+.env
+*.secret
+node_modules/
+dist/
+_build/
+deps/
+*.beam
+cover/
+priv/documents/
+.DS_Store
+.env
+*.pem
+*.key
+client_secret*
+node_modules/

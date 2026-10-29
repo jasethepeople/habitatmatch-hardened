@@ -1,0 +1,4 @@
+{'entries': 100000, 'samples_ms': [114.421806, 110.516405, 111.963235, 113.346108, 112.28251], 'median_ms': 112.28251}
+
+Environment: containerized Python benchmark on the assistant runtime; not a production hardware claim.
+The benchmark measures only the hash-ranking primitive, not PostgreSQL I/O, network latency, NIST beacon retrieval, or Ecto transaction time.
